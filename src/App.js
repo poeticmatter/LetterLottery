@@ -45,6 +45,24 @@ const App = () => {
     }
   };
 
+  const handleBust = () => {
+    // Remove all but the last letter from currentLetters
+    const lastLetter = currentLetters[currentLetters.length - 1];
+    setCurrentLetters([lastLetter]);
+
+    // Add 2 new letters from lettersPool to currentLetters
+    const remainingLettersCount = lettersPool.length;
+    if (remainingLettersCount >= 2) {
+      const newLetters = lettersPool.slice(0, 2);
+      setLettersPool(lettersPool.slice(2));
+      setCurrentLetters((prevLetters) => [...prevLetters, ...newLetters]);
+    } else if (remainingLettersCount === 1) {
+      const newLetter = lettersPool[0];
+      setLettersPool([]);
+      setCurrentLetters((prevLetters) => [...prevLetters, newLetter]);
+    }
+  };
+
   // Function to handle word submission
   const handleWordSubmission = (word) => {
     // Check if the submitted word is valid and update game state accordingly
@@ -69,7 +87,9 @@ const App = () => {
           <button className="keyboard-button draw" onClick={handleDraw}>
             Draw
           </button>
-          <button className="keyboard-button bust">Bust</button>
+          <button className="keyboard-button bust" onClick={handleBust}>
+            Bust
+          </button>
         </div>
         <div className="centered-content">
           <Keyboard onKeyPress={handleKeyboardKeyPress} />
