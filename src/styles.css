@@ -62,7 +62,7 @@ body {
   color: #333;
 }
 
-.game-info {
+.centered-content {
   display: flex;
   justify-content: space-between;
   width: 40%;
@@ -73,12 +73,14 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding: 20px;
 }
 
 .score-item {
   font-size: 24px;
   font-weight: bold;
   color: #333;
+  text-align: center;
 }
 
 .score {
@@ -88,7 +90,7 @@ body {
   justify-content: center;
   text-align: center;
 }
-.score-divider {
+.divider {
   width: 100%;
   height: 2px;
   background-color: #ccc;
@@ -100,9 +102,23 @@ body {
   width: 100%;
 }
 
-.letters-row-container {
-  padding-top: 30px;
-  display: flex;
-  justify-content: space-between;
-  width: 40%;
+.word {
+  padding-top: 100px;
+  padding-bottom: 10px;
+  font-family: sans-serif;
+  font-size: 40px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.word-container {
+  width: 100%;
+}
+.word-score {
+  padding-top: 10px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
 }

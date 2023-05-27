@@ -1,0 +1,58 @@
+/* keyboard.css */
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: repeat(10, 1fr);
+  grid-gap: 10px;
+  padding-top: 80px;
+  width: 100%;
+}
+
+.keyboard-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keyboard-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.keyboard-button:hover {
+  background-color: #dcdcdc;
+}
+
+.keyboard-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #007bff;
+}
+.enter {
+  width: 80px;
+}
+.backspace {
+  width: 120px;
+}
+
+.draw {
+  width: 80px;
+  background-color: #8fd8aa;
+}
+
+.bust {
+  width: 80px;
+  background-color: #e09696;
+}
