@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable no-undef */
+import React, { useState } from "react";
 import Header from "./Header";
 import LetterPool from "./LetterPool";
 import Score from "./Score";
@@ -13,22 +14,61 @@ const handleKeyboardKeyPress = (key) => {
 };
 
 const App = () => {
+  // Initial game state
+  const [lettersPool, setLettersPool] = useState(generateRandomLetters(24)); // Array of letters in the pool
+  const [currentLetters, setCurrentLetters] = useState([]); // Array of currently used letters
+  const [totalScore, setTotalScore] = useState(0); // Total score
+  const [wordCount, setWordCount] = useState(0); // Counter for scored words
+
+  // Helper function to generate a random order of letters
+  function generateRandomLetters(count) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const letters = alphabet.split("");
+    let randomLetters = [];
+
+    for (let i = 0; i < count; i++) {
+      const randomIndex = Math.floor(Math.random() * letters.length);
+      const letter = letters.splice(randomIndex, 1)[0];
+      randomLetters.push(letter);
+    }
+
+    return randomLetters;
+  }
+
+  // Function to handle letter selection
+  const handleDraw = () => {
+    if (lettersPool.length > 0) {
+      const [letter] = lettersPool; // Get the first letter from the lettersPool
+      setLettersPool(lettersPool.slice(1)); // Remove the first letter from the lettersPool
+      setCurrentLetters([...currentLetters, letter]); // Move the letter to the currentLetters array
+      // Update game state as needed based on the selected letter
+    }
+  };
+
+  // Function to handle word submission
+  const handleWordSubmission = (word) => {
+    // Check if the submitted word is valid and update game state accordingly
+    // Calculate word score, update total score and word count
+  };
+
   return (
     <div className="app">
       <Header />
       <div className="content">
         <div className="centered-content">
-          <LetterPool count={24} />
-          <Score totalScore={52} currentScore={7} />
+          <LetterPool count={lettersPool.length} />
+          <Score totalScore={totalScore} currentScore={wordCount} />
         </div>
         <div className="centered-content">
-          <LetterRow letters={["A", "C", "G"]} />
+          <LetterRow letters={currentLetters} />
         </div>
         <div className="centered-content">
           <Word text="Cage" wordScore={8} />
         </div>
         <div className="centered-content">
-          <button className="keyboard-button draw">Draw</button>
+          <button className="keyboard-button draw" onClick={handleDraw}>
+            Draw
+          </button>
           <button className="keyboard-button bust">Bust</button>
         </div>
         <div className="centered-content">

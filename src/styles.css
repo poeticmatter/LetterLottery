@@ -50,6 +50,7 @@ body {
 
 .letter {
   display: inline-flex;
+  font-family: sans-serif;
   align-items: center;
   justify-content: center;
   width: 60px;
@@ -121,4 +122,5 @@ body {
   font-weight: bold;
   color: #333;
   text-align: center;
+  font-family: sans-serif;
 }
