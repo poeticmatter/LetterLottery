@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import LetterPool from "./LetterPool";
 import Score from "./Score";
@@ -19,55 +19,102 @@ const App = () => {
   const [currentLetters, setCurrentLetters] = useState([]); // Array of currently used letters
   const [totalScore, setTotalScore] = useState(0); // Total score
   const [wordCount, setWordCount] = useState(0); // Counter for scored words
+  const [currentWord, setCurrentWord] = useState("");
 
   // Helper function to generate a random order of letters
   function generateRandomLetters(count) {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const letters = alphabet.split("");
     let randomLetters = [];
-
     for (let i = 0; i < count; i++) {
       const randomIndex = Math.floor(Math.random() * letters.length);
       const letter = letters.splice(randomIndex, 1)[0];
       randomLetters.push(letter);
     }
-
     return randomLetters;
   }
 
   // Function to handle letter selection
   const handleDraw = () => {
-    if (lettersPool.length > 0) {
-      const [letter] = lettersPool; // Get the first letter from the lettersPool
-      setLettersPool(lettersPool.slice(1)); // Remove the first letter from the lettersPool
-      setCurrentLetters([...currentLetters, letter]); // Move the letter to the currentLetters array
-      // Update game state as needed based on the selected letter
+    const drawnLetters = drawLetters(1);
+    setCurrentLetters([...currentLetters, ...drawnLetters]); // Move the letters to the currentLetters array
+  };
+
+  const fillLetters = () => {
+    if (lettersPool.length > 0 && currentLetters.length < 3) {
+      const lettersToDraw = Math.min(
+        3 - currentLetters.length,
+        lettersPool.length
+      );
+      const drawnLetters = drawLetters(lettersToDraw);
+      setCurrentLetters([...currentLetters, ...drawnLetters]); // Move the letters to the currentLetters array
+    }
+  };
+
+  const drawLetters = (count) => {
+    if (lettersPool.length >= count) {
+      const lettersToDraw = lettersPool.slice(0, count); // Get the first 'count' letters from the lettersPool
+      setLettersPool(lettersPool.slice(count)); // Remove the first 'count' letters from the lettersPool
+      return lettersToDraw; //Return the drawn letters, the method calling it will need to setCurrentLetters()
     }
   };
 
   const handleBust = () => {
     // Remove all but the last letter from currentLetters
     const lastLetter = currentLetters[currentLetters.length - 1];
-    setCurrentLetters([lastLetter]);
+    const lettersToDraw = Math.min(2, lettersPool.length);
+    const drawnLetters = drawLetters(lettersToDraw);
+    setCurrentLetters([...lastLetter, ...drawnLetters]); // Move the letters to the currentLetters array
+  };
 
-    // Add 2 new letters from lettersPool to currentLetters
-    const remainingLettersCount = lettersPool.length;
-    if (remainingLettersCount >= 2) {
-      const newLetters = lettersPool.slice(0, 2);
-      setLettersPool(lettersPool.slice(2));
-      setCurrentLetters((prevLetters) => [...prevLetters, ...newLetters]);
-    } else if (remainingLettersCount === 1) {
-      const newLetter = lettersPool[0];
-      setLettersPool([]);
-      setCurrentLetters((prevLetters) => [...prevLetters, newLetter]);
+  const handleWordSubmission = async () => {
+    const isValidWord = await checkIfValidWord(currentWord);
+
+    if (!isValidWord) {
+      // Handle case when word is not valid
+      // Update the UI to display the word in red
+      console.log("Word not valid");
+    } else if (!containsAllLetters(word, currentLetters)) {
+      // Handle case when word is valid but doesn't contain all letters
+      // Update the UI to display the missing letters in red
+      console.log("Word does not contain all letters");
+    } else {
+      // Calculate word score based on the formula
+      const wordScore =
+        Math.pow(currentLetters.length, 2) +
+        (currentLetters.length - currentWord.length);
+
+      // Update the total score and word count
+      setTotalScore((prevScore) => prevScore + wordScore);
+      setWordCount((prevCount) => prevCount + 1);
+
+      // Clear the current letters array
+      setCurrentLetters([]);
     }
   };
 
-  // Function to handle word submission
-  const handleWordSubmission = (word) => {
-    // Check if the submitted word is valid and update game state accordingly
-    // Calculate word score, update total score and word count
+  const checkIfValidWord = async (word) => {
+    try {
+      const response = await fetch(
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
+      );
+      const data = await response.json();
+      return Array.isArray(data) && data.length > 0;
+    } catch (error) {
+      console.error("Error checking word validity:", error);
+      return false;
+    }
   };
+
+  const containsAllLetters = (word, letters) => {
+    const wordLetters = word.split("");
+    return wordLetters.every((letter) => letters.includes(letter));
+  };
+
+  // useEffect hook to call fillLetters() after the app initializes
+  useEffect(() => {
+    fillLetters();
+  }, []);
 
   return (
     <div className="app">
@@ -89,6 +136,12 @@ const App = () => {
           </button>
           <button className="keyboard-button bust" onClick={handleBust}>
             Bust
+          </button>
+          <button
+            className="keyboard-button draw"
+            onClick={() => handleWordSubmission("Cage")}
+          >
+            Submit
           </button>
         </div>
         <div className="centered-content">
