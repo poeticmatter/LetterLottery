@@ -88,8 +88,9 @@ const App = () => {
       setTotalScore((prevScore) => prevScore + wordScore);
       setWordCount((prevCount) => prevCount + 1);
 
-      // Clear the current letters array
-      setCurrentLetters([]);
+      const lettersToDraw = Math.min(3, lettersPool.length);
+      const drawnLetters = drawLetters(lettersToDraw);
+      setCurrentLetters([...drawnLetters]);
     }
   };
 
