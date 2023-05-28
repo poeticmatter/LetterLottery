@@ -9,10 +9,6 @@ import Keyboard from "./Keyboard";
 import "./styles.css";
 import "./keyboard.css";
 
-const handleKeyboardKeyPress = (key) => {
-  // Handle the key press event
-};
-
 const App = () => {
   // Initial game state
   const [lettersPool, setLettersPool] = useState(generateRandomLetters(24)); // Array of letters in the pool
@@ -33,6 +29,18 @@ const App = () => {
     }
     return randomLetters;
   }
+
+  const handleKeyboardKeyPress = (key) => {
+    if (key === "Enter") {
+      handleWordSubmission();
+    } else if (key === "Backspace") {
+      // Remove the last letter from currentWord
+      setCurrentWord((prevWord) => prevWord.slice(0, -1));
+    } else {
+      // Add the key to currentWord
+      setCurrentWord((prevWord) => prevWord + key);
+    }
+  };
 
   // Function to handle letter selection
   const handleDraw = () => {
@@ -71,10 +79,8 @@ const App = () => {
     const isValidWord = await checkIfValidWord(currentWord);
 
     if (!isValidWord) {
-      // Handle case when word is not valid
-      // Update the UI to display the word in red
-      console.log("Word not valid");
-    } else if (!containsAllLetters(word, currentLetters)) {
+      return;
+    } else if (!containsAllLetters(currentWord, currentLetters)) {
       // Handle case when word is valid but doesn't contain all letters
       // Update the UI to display the missing letters in red
       console.log("Word does not contain all letters");
@@ -129,7 +135,7 @@ const App = () => {
           <LetterRow letters={currentLetters} />
         </div>
         <div className="centered-content">
-          <Word text="Cage" wordScore={8} />
+          <Word text={currentWord} wordScore={8} />
         </div>
         <div className="centered-content">
           <button className="keyboard-button draw" onClick={handleDraw}>
@@ -140,7 +146,7 @@ const App = () => {
           </button>
           <button
             className="keyboard-button draw"
-            onClick={() => handleWordSubmission("Cage")}
+            onClick={() => handleWordSubmission(currentWord)}
           >
             Submit
           </button>
