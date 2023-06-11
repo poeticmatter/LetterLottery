@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/letterlottery/static/css/main.9f81d955.css",
-    "main.js": "/letterlottery/static/js/main.59d123cb.js",
-    "index.html": "/letterlottery/index.html",
-    "main.9f81d955.css.map": "/letterlottery/static/css/main.9f81d955.css.map",
-    "main.59d123cb.js.map": "/letterlottery/static/js/main.59d123cb.js.map"
+    "main.css": "/LetterLottery/static/css/main.9f81d955.css",
+    "main.js": "/LetterLottery/static/js/main.c20e5051.js",
+    "index.html": "/LetterLottery/index.html",
+    "main.9f81d955.css.map": "/LetterLottery/static/css/main.9f81d955.css.map",
+    "main.c20e5051.js.map": "/LetterLottery/static/js/main.c20e5051.js.map"
   },
   "entrypoints": [
     "static/css/main.9f81d955.css",
-    "static/js/main.59d123cb.js"
+    "static/js/main.c20e5051.js"
   ]
 }
