@@ -94,35 +94,28 @@ const App = () => {
 
   // Function to handle letter selection
   const handleDraw = () => {
-    const drawnLetters = drawLetters(1);
+    const drawnLetters = drawLettersWithCheck(1);
     setCurrentLetters([...currentLetters, ...drawnLetters]); // Move the letters to the currentLetters array
   };
 
-  const fillLetters = () => {
-    if (lettersPool.length > 0 && currentLetters.length < 3) {
-      const lettersToDraw = Math.min(
-        3 - currentLetters.length,
-        lettersPool.length
-      );
-      const drawnLetters = drawLetters(lettersToDraw);
-      setCurrentLetters([...currentLetters, ...drawnLetters]); // Move the letters to the currentLetters array
-    }
+  const drawLettersWithCheck = (count) => {
+    const lettersToDraw = Math.min(count, lettersPool.length);
+    return drawLetters(lettersToDraw);
   };
 
   const drawLetters = (count) => {
-    if (lettersPool.length >= count) {
-      const lettersToDraw = lettersPool.slice(0, count); // Get the first 'count' letters from the lettersPool
-      setLettersPool(lettersPool.slice(count)); // Remove the first 'count' letters from the lettersPool
-      return lettersToDraw; //Return the drawn letters, the method calling it will need to setCurrentLetters()
-    }
-    return [];
+    console.log("Drawing", count, "letters from:", lettersPool);
+    // Get the first 'count' letters from the lettersPool
+    const drawnLetters = lettersPool.slice(0, count); // Get the first 'count' letters from the lettersPool
+    // Remove the first 'count' letters from the lettersPool
+    setLettersPool((prevLetters) => prevLetters.slice(count));
+    return drawnLetters;
   };
 
   const handleBust = () => {
     // Remove all but the last letter from currentLetters
     const lastLetter = currentLetters[currentLetters.length - 1];
-    const lettersToDraw = Math.min(2, lettersPool.length);
-    const drawnLetters = drawLetters(lettersToDraw);
+    const drawnLetters = drawLettersWithCheck(2);
     setCurrentLetters([...lastLetter, ...drawnLetters]); // Move the letters to the currentLetters array
   };
 
@@ -147,8 +140,7 @@ const App = () => {
       setTotalScore((prevScore) => prevScore + wordScore);
       setWordCount((prevCount) => prevCount + 1);
 
-      const lettersToDraw = Math.min(3, lettersPool.length);
-      const drawnLetters = drawLetters(lettersToDraw);
+      const drawnLetters = drawLettersWithCheck(3);
       setCurrentLetters([...drawnLetters]);
       setCurrentWord("");
     }
@@ -194,7 +186,9 @@ const App = () => {
 
   // useEffect hook to call fillLetters() after the app initializes
   useEffect(() => {
-    fillLetters();
+    if (currentLetters.length === 0) {
+      setCurrentLetters(drawLetters(3));
+    }
   }, []);
 
   useEffect(() => {
