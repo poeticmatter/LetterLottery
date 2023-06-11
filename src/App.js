@@ -113,9 +113,19 @@ const App = () => {
     return words.includes(word.toLowerCase());
   };
 
+  // Check if the word contains all letters
   const containsAllLetters = (word, letters) => {
-    const wordLetters = word.split("");
-    return wordLetters.every((letter) => letters.includes(letter));
+    const wordSet = new Set(word);
+    for (const letter of letters) {
+      //if letter is not in word, return false
+      if (!wordSet.has(letter)) {
+        return false;
+      } else {
+        //remove letter from wordSet
+        wordSet.delete(letter);
+      }
+      return true;
+    }
   };
 
   const fetchWordList = async () => {
