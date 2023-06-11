@@ -10,6 +10,8 @@ import "./styles.css";
 import "./keyboard.css";
 
 const App = () => {
+  //word list
+  const [wordList, setWordList] = useState([]); // Array of words
   // Initial game state
   const [lettersPool, setLettersPool] = useState(generateRandomLetters(24)); // Array of letters in the pool
   const [currentLetters, setCurrentLetters] = useState([]); // Array of currently used letters
@@ -31,6 +33,8 @@ const App = () => {
   }
 
   const handleKeyboardKeyPress = (key) => {
+    console.log("Key Pressed:", key); // Add this console.log statement
+    console.log("Current word before update:", currentWord);
     if (key === "Enter") {
       handleWordSubmission();
     } else if (key === "Backspace") {
@@ -40,6 +44,7 @@ const App = () => {
       // Add the key to currentWord
       setCurrentWord((prevWord) => prevWord + key);
     }
+    console.log("Current word after update:", currentWord);
   };
 
   // Function to handle letter selection
@@ -76,15 +81,17 @@ const App = () => {
   };
 
   const handleWordSubmission = async () => {
+    console.log("Word submitted:", currentWord, "."); // Log that the word was submitted
     const isValidWord = await checkIfValidWord(currentWord);
 
     if (!isValidWord) {
+      console.log("Word invalid"); // Log that the word is invalid
       return;
     } else if (!containsAllLetters(currentWord, currentLetters)) {
-      // Handle case when word is valid but doesn't contain all letters
-      // Update the UI to display the missing letters in red
-      console.log("Word does not contain all letters");
+      console.log("Word does not contain all letters"); // Log that the word does not contain all letters
     } else {
+      console.log("Word valid"); // Log that the word is valid
+
       // Calculate word score based on the formula
       const wordScore =
         Math.pow(currentLetters.length, 2) +
@@ -99,18 +106,11 @@ const App = () => {
       setCurrentLetters([...drawnLetters]);
     }
   };
-
+  // Get wordlist and check if the word is in it
   const checkIfValidWord = async (word) => {
-    try {
-      const response = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
-      );
-      const data = await response.json();
-      return Array.isArray(data) && data.length > 0;
-    } catch (error) {
-      console.error("Error checking word validity:", error);
-      return false;
-    }
+    const words = await getWordList();
+    console.log(words);
+    return words.includes(word.toLowerCase());
   };
 
   const containsAllLetters = (word, letters) => {
@@ -118,10 +118,54 @@ const App = () => {
     return wordLetters.every((letter) => letters.includes(letter));
   };
 
+  const fetchWordList = async () => {
+    const response = await fetch("wordlist.txt");
+    const text = await response.text();
+    const wordList = text.split("\n").map((word) => word.trim());
+    return wordList;
+  };
+
+  // If wordlist is empty, fetch it. Otherwise return.
+  const getWordList = async () => {
+    if (wordList.length > 0) {
+      return wordList;
+    } else {
+      const wordList = await fetchWordList();
+      setWordList(wordList);
+      return wordList;
+    }
+  };
+
   // useEffect hook to call fillLetters() after the app initializes
   useEffect(() => {
     fillLetters();
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const key = event.key.toUpperCase();
+      const validKeys = /^[a-zA-Z]$/; // Regular expression to match letters
+      const isLetter = validKeys.test(key);
+      const isEnter = event.keyCode === 13;
+      const isBackspace = event.keyCode === 8;
+
+      if (isLetter || isEnter || isBackspace) {
+        const processedKey = isBackspace
+          ? "Backspace"
+          : isEnter
+          ? "Enter"
+          : key;
+
+        handleKeyboardKeyPress(processedKey);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentWord]);
 
   return (
     <div className="app">
@@ -143,12 +187,6 @@ const App = () => {
           </button>
           <button className="keyboard-button bust" onClick={handleBust}>
             Bust
-          </button>
-          <button
-            className="keyboard-button draw"
-            onClick={() => handleWordSubmission(currentWord)}
-          >
-            Submit
           </button>
         </div>
         <div className="centered-content">
