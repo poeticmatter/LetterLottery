@@ -115,6 +115,7 @@ const App = () => {
       setLettersPool(lettersPool.slice(count)); // Remove the first 'count' letters from the lettersPool
       return lettersToDraw; //Return the drawn letters, the method calling it will need to setCurrentLetters()
     }
+    return [];
   };
 
   const handleBust = () => {
@@ -155,7 +156,6 @@ const App = () => {
   // Get wordlist and check if the word is in it
   const checkIfValidWord = async (word) => {
     const words = await getWordList();
-    console.log(words);
     return words.includes(word.toLowerCase());
   };
 
