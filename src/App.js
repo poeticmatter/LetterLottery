@@ -13,22 +13,67 @@ const App = () => {
   //word list
   const [wordList, setWordList] = useState([]); // Array of words
   // Initial game state
-  const [lettersPool, setLettersPool] = useState(generateRandomLetters(24)); // Array of letters in the pool
+  const [lettersPool, setLettersPool] = useState(() =>
+    generateRandomLetters(40)
+  );
   const [currentLetters, setCurrentLetters] = useState([]); // Array of currently used letters
   const [totalScore, setTotalScore] = useState(0); // Total score
   const [wordCount, setWordCount] = useState(0); // Counter for scored words
   const [currentWord, setCurrentWord] = useState("");
 
   // Helper function to generate a random order of letters
-  function generateRandomLetters(count) {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const letters = alphabet.split("");
-    let randomLetters = [];
-    for (let i = 0; i < count; i++) {
-      const randomIndex = Math.floor(Math.random() * letters.length);
-      const letter = letters.splice(randomIndex, 1)[0];
-      randomLetters.push(letter);
+  function generateRandomLetters(letterCount) {
+    const letterFrequency = [
+      ["A", 8.167],
+      ["B", 1.492],
+      ["C", 2.782],
+      ["D", 4.253],
+      ["E", 12.702],
+      ["F", 2.228],
+      ["G", 2.015],
+      ["H", 6.094],
+      ["I", 6.966],
+      ["J", 0.153],
+      ["K", 0.772],
+      ["L", 4.025],
+      ["M", 2.406],
+      ["N", 6.749],
+      ["O", 7.507],
+      ["P", 1.929],
+      ["Q", 0.095],
+      ["R", 5.987],
+      ["S", 6.327],
+      ["T", 9.056],
+      ["U", 2.758],
+      ["V", 0.978],
+      ["W", 2.36],
+      ["X", 0.15],
+      ["Y", 1.974],
+      ["Z", 0.074],
+    ];
+    //create an array of size letterCount
+    const letters = [];
+    for (let i = 0; i < letterCount; i++) {
+      //pick a random letter based on letterFrequency
+      const random = Math.random() * 100;
+      let sum = 0;
+      for (const [letter, frequency] of letterFrequency) {
+        sum += frequency;
+        if (random < sum) {
+          letters.push(letter);
+          break;
+        }
+      }
     }
+    //shuffle the array
+    const randomLetters = [];
+    while (letters.length > 0) {
+      const randomIndex = Math.floor(Math.random() * letters.length);
+      const randomLetter = letters.splice(randomIndex, 1)[0];
+      randomLetters.push(randomLetter);
+    }
+    //print the array
+    console.log(randomLetters);
     return randomLetters;
   }
 
@@ -104,6 +149,7 @@ const App = () => {
       const lettersToDraw = Math.min(3, lettersPool.length);
       const drawnLetters = drawLetters(lettersToDraw);
       setCurrentLetters([...drawnLetters]);
+      setCurrentWord("");
     }
   };
   // Get wordlist and check if the word is in it
