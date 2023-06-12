@@ -20,6 +20,7 @@ const App = () => {
   const [totalScore, setTotalScore] = useState(0); // Total score
   const [wordCount, setWordCount] = useState(0); // Counter for scored words
   const [currentWord, setCurrentWord] = useState("");
+  const [wordScore, setWordScore] = useState(0); // Score for the current word
 
   // Helper function to generate a random order of letters
   function generateRandomLetters(letterCount) {
@@ -78,19 +79,25 @@ const App = () => {
     return randomLetters;
   }
 
-  const handleKeyboardKeyPress = (key) => {
+  const handleKeyboardKeyPress = async (key) => {
     console.log("Key Pressed:", key); // Add this console.log statement
-    console.log("Current word before update:", currentWord);
+    var newWord = currentWord;
     if (key === "Enter") {
       handleWordSubmission();
-    } else if (key === "Backspace") {
-      // Remove the last letter from currentWord
-      setCurrentWord((prevWord) => prevWord.slice(0, -1));
     } else {
-      // Add the key to currentWord
-      setCurrentWord((prevWord) => prevWord + key);
+      if (key === "Backspace") {
+        // Remove the last letter from currentWord
+        newWord = newWord.slice(0, -1);
+      } else {
+        // Add the key to currentWord
+        newWord = newWord + key;
+      }
+      const wordScore = await calculateWordScore(newWord, currentLetters);
+      setWordScore(wordScore);
+      setCurrentWord(newWord);
     }
-    console.log("Current word after update:", currentWord);
+
+    console.log("Current word after update:", newWord);
   };
 
   // function handling draw button
@@ -121,21 +128,9 @@ const App = () => {
 
   const handleWordSubmission = async () => {
     console.log("Word submitted:", currentWord, "."); // Log that the word was submitted
-    const isValidWord = await checkIfValidWord(currentWord);
-
-    if (!isValidWord) {
-      console.log("Word invalid"); // Log that the word is invalid
-      return;
-    } else if (!containsAllLetters(currentWord, currentLetters)) {
-      console.log("Word does not contain all letters"); // Log that the word does not contain all letters
-    } else {
-      console.log("Word valid"); // Log that the word is valid
-
-      // Calculate word score based on the formula
-      const wordScore =
-        Math.pow(currentLetters.length, 2) +
-        (currentLetters.length - currentWord.length);
-
+    const wordScore = await calculateWordScore(currentWord, currentLetters);
+    //if wordScore is smaller than or equal to 0, return.
+    if (wordScore >= 0) {
       // Update the total score and word count
       setTotalScore((prevScore) => prevScore + wordScore);
       setWordCount((prevCount) => prevCount + 1);
@@ -151,19 +146,39 @@ const App = () => {
     return words.includes(word.toLowerCase());
   };
 
+  const calculateWordScore = async (word, letters) => {
+    console.log("---------------------");
+    console.log("Calculating score for word: ", word, "And letters: ", letters); // Log that the score is being calculated
+    const isValidWord = await checkIfValidWord(word);
+    if (!isValidWord) {
+      console.log("Word invalid: ", word); // Log that the word is invalid
+      return 0;
+    } else if (!containsAllLetters(word, letters)) {
+      console.log("Word does not contain all letters: ", word); // Log that the word does not contain all letters
+      return 0;
+    }
+    console.log("Word valid: ", word); // Log that the word is valid
+    return Math.pow(letters.length, 2) + (letters.length - word.length);
+  };
+
   // Check if the word contains all letters
   const containsAllLetters = (word, letters) => {
-    const wordSet = new Set(word);
+    //Convert word to an array of letters with duplicates
+    const wordLetters = word.split("");
+
     for (const letter of letters) {
+      console.log("Checking letter: ", letter); // Log that the letter is being checked
       //if letter is not in word, return false
-      if (!wordSet.has(letter)) {
+      if (!wordLetters.includes(letter)) {
+        console.log("Word does not contain letter: ", letter); // Log that the word does not contain the letter
         return false;
       } else {
         //remove letter from wordSet
-        wordSet.delete(letter);
+        wordLetters.splice(wordLetters.indexOf(letter), 1);
+        console.log("Word after removing letter: ", wordLetters); // Log that the word after removing the letter
       }
-      return true;
     }
+    return true;
   };
 
   const fetchWordList = async () => {
@@ -229,7 +244,7 @@ const App = () => {
           <LetterRow letters={currentLetters} />
         </div>
         <div className="centered-content">
-          <Word text={currentWord} wordScore={8} />
+          <Word text={currentWord} wordScore={wordScore} />
         </div>
         <div className="centered-content">
           <button className="keyboard-button draw" onClick={handleDraw}>
