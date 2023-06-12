@@ -20,7 +20,7 @@ const App = () => {
   const [totalScore, setTotalScore] = useState(0); // Total score
   const [wordCount, setWordCount] = useState(0); // Counter for scored words
   const [currentWord, setCurrentWord] = useState("");
-  const [wordScore, setWordScore] = useState(0); // Score for the current word
+  const [wordScore, setWordScore] = useState("Use all letters"); // Score for the current word
 
   // Helper function to generate a random order of letters
   function generateRandomLetters(letterCount) {
@@ -152,10 +152,10 @@ const App = () => {
     const isValidWord = await checkIfValidWord(word);
     if (!isValidWord) {
       console.log("Word invalid: ", word); // Log that the word is invalid
-      return 0;
+      return "Invalid Word";
     } else if (!containsAllLetters(word, letters)) {
       console.log("Word does not contain all letters: ", word); // Log that the word does not contain all letters
-      return 0;
+      return "Use all letters";
     }
     console.log("Word valid: ", word); // Log that the word is valid
     return Math.pow(letters.length, 2) + (letters.length - word.length);
