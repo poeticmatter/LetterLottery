@@ -101,9 +101,10 @@ const App = () => {
   };
 
   // function handling draw button
-  const handleDraw = () => {
+  const handleDraw = (event) => {
     const drawnLetters = drawLettersWithCheck(1);
     setCurrentLetters([...currentLetters, ...drawnLetters]); // Move the letters to the currentLetters array
+    event.target.blur();
   };
 
   const drawLettersWithCheck = (count) => {
@@ -119,7 +120,7 @@ const App = () => {
     return drawnLetters;
   };
 
-  const handleBust = () => {
+  const handleBust = (event) => {
     // Remove all but the last letter from currentLetters
     const lastLetter = currentLetters[currentLetters.length - 1];
     const drawnLetters = drawLettersWithCheck(2);
