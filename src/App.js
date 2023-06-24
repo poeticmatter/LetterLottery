@@ -183,13 +183,9 @@ const App = () => {
   };
 
   const fetchWordList = async () => {
-    let url;
-    if (process.env.NODE_ENV === "production") {
-      url = "/wordlist.txt"; // Production URL
-    } else {
-      url = "https://poeticmatter.github.io/LetterLottery/wordlist.txt"; // Development URL
-    }
-    const response = await fetch(url);
+    const response = await fetch(
+      "https://poeticmatter.github.io/LetterLottery/wordlist.txt"
+    );
 
     const text = await response.text();
     const wordList = text.split("\n").map((word) => word.trim());
