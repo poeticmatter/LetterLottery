@@ -16,6 +16,8 @@ const App = () => {
   const [lettersPool, setLettersPool] = useState(() =>
     generateRandomLetters(40)
   );
+  //minimum letters drawn
+  const minLetters = 3;
   const [currentLetters, setCurrentLetters] = useState([]); // Array of currently used letters
   const [totalScore, setTotalScore] = useState(0); // Total score
   const [wordCount, setWordCount] = useState(0); // Counter for scored words
@@ -25,27 +27,27 @@ const App = () => {
   // Helper function to generate a random order of letters
   function generateRandomLetters(letterCount) {
     const letterFrequency = [
-      //      ["A", 8],
+      ["A", 5],
       ["B", 2],
       ["C", 4],
       ["D", 4],
-      //      ["E", 12],
+      ["E", 12],
       ["F", 4],
       ["G", 2],
       ["H", 5],
-      //      ["I", 7],
+      ["I", 5],
       ["J", 1],
       ["K", 1],
       ["L", 5],
       ["M", 4],
       ["N", 5],
-      //      ["O", 7.5],
+      ["O", 6],
       ["P", 3],
       ["Q", 1],
       ["R", 5],
       ["S", 5],
       ["T", 7],
-      //      ["U", 3],
+      ["U", 4],
       ["V", 2],
       ["W", 3],
       ["X", 1],
@@ -105,9 +107,13 @@ const App = () => {
   };
 
   // function handling draw button
-  const handleDraw = (event) => {
+  const handleDraw = async (event) => {
     const drawnLetters = drawLettersWithCheck(1);
-    setCurrentLetters([...currentLetters, ...drawnLetters]); // Move the letters to the currentLetters array
+    //add the letter to the currentLetters array
+    const updatedLetters = [...currentLetters, ...drawnLetters];
+    setCurrentLetters(updatedLetters); // Move the letters to the currentLetters array
+    const wordScore = await calculateWordScore(currentWord, updatedLetters);
+    setWordScore(wordScore);
     event.target.blur();
   };
 
@@ -124,11 +130,14 @@ const App = () => {
     return drawnLetters;
   };
 
-  const handleBust = (event) => {
-    // Remove all but the last letter from currentLetters
-    const lastLetter = currentLetters[currentLetters.length - 1];
-    const drawnLetters = drawLettersWithCheck(2);
-    setCurrentLetters([...lastLetter, ...drawnLetters]); // Move the letters to the currentLetters array
+  const handleBust = async (event) => {
+    // Remove all letters from currentLetters
+    const drawnLetters = drawLettersWithCheck(minLetters);
+    setCurrentLetters(drawnLetters); // Move the letters to the currentLetters array
+    const newWord = "";
+    const wordScore = await calculateWordScore(newWord, currentLetters);
+    setWordScore(wordScore);
+    setCurrentWord(newWord);
     event.target.blur();
   };
 
@@ -141,7 +150,7 @@ const App = () => {
       setTotalScore((prevScore) => prevScore + wordScore);
       setWordCount((prevCount) => prevCount + 1);
 
-      const drawnLetters = drawLettersWithCheck(3);
+      const drawnLetters = drawLettersWithCheck(minLetters);
       setCurrentLetters([...drawnLetters]);
       setCurrentWord("");
     }
@@ -211,7 +220,7 @@ const App = () => {
   // useEffect hook to call fillLetters() after the app initializes
   useEffect(() => {
     if (currentLetters.length === 0) {
-      setCurrentLetters(drawLetters(3));
+      setCurrentLetters(drawLetters(minLetters));
     }
   }, []);
 
