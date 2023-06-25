@@ -153,6 +153,8 @@ const App = () => {
       const drawnLetters = drawLettersWithCheck(minLetters);
       setCurrentLetters([...drawnLetters]);
       setCurrentWord("");
+      const newWordScore = await calculateWordScore("", drawnLetters);
+      setWordScore(newWordScore);
     }
   };
   // Get wordlist and check if the word is in it
