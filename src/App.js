@@ -25,43 +25,47 @@ const App = () => {
   // Helper function to generate a random order of letters
   function generateRandomLetters(letterCount) {
     const letterFrequency = [
-      ["A", 8],
-      ["B", 1.5],
-      ["C", 2.5],
+      //      ["A", 8],
+      ["B", 2],
+      ["C", 4],
       ["D", 4],
-      ["E", 12],
-      ["F", 2],
+      //      ["E", 12],
+      ["F", 4],
       ["G", 2],
-      ["H", 6],
-      ["I", 7],
-      ["J", 0.5],
-      ["K", 0.5],
-      ["L", 4],
-      ["M", 2.5],
-      ["N", 7],
-      ["O", 7.5],
-      ["P", 2],
-      ["Q", 0.5],
-      ["R", 6],
-      ["S", 6],
-      ["T", 9],
-      ["U", 3],
-      ["V", 1],
-      ["W", 2.5],
-      ["X", 0.5],
-      ["Y", 2],
-      ["Z", 0.5],
+      ["H", 5],
+      //      ["I", 7],
+      ["J", 1],
+      ["K", 1],
+      ["L", 5],
+      ["M", 4],
+      ["N", 5],
+      //      ["O", 7.5],
+      ["P", 3],
+      ["Q", 1],
+      ["R", 5],
+      ["S", 5],
+      ["T", 7],
+      //      ["U", 3],
+      ["V", 2],
+      ["W", 3],
+      ["X", 1],
+      ["Y", 3],
+      ["Z", 1],
     ];
 
     //create an array of size letterCount
     const letters = [];
     for (let i = 0; i < letterCount; i++) {
-      //pick a random letter based on letterFrequency
-      const random = Math.random() * 100;
-      let sum = 0;
+      let frequencySum = 0;
+      //iterate over letterFrequency and add the frequency to frequencySum
       for (const [letter, frequency] of letterFrequency) {
-        sum += frequency;
-        if (random < sum) {
+        frequencySum += frequency;
+      }
+      const random = Math.random() * frequencySum;
+      let frequencyTotal = 0;
+      for (const [letter, frequency] of letterFrequency) {
+        frequencyTotal += frequency;
+        if (random < frequencyTotal) {
           letters.push(letter);
           break;
         }
@@ -125,6 +129,7 @@ const App = () => {
     const lastLetter = currentLetters[currentLetters.length - 1];
     const drawnLetters = drawLettersWithCheck(2);
     setCurrentLetters([...lastLetter, ...drawnLetters]); // Move the letters to the currentLetters array
+    event.target.blur();
   };
 
   const handleWordSubmission = async () => {
